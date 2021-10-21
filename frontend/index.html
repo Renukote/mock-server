@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        div {
+            width: 90%;
+            margin:50px;
+            height:fit-content;
+            padding:15px;
+            background: teal;
+        }
+    </style>
+</head>
+<body>
+    
+    <h1>Add products</h1>
+
+    <div>
+        <input id = 'searchId' type = 'number' placeholder="id"/>
+        <button onclick = 'getData()'>Get Details</button>
+    </div>
+
+    <div>
+        <input id = 'id' type = 'number' placeholder="id"/>
+        <input type = 'text' id = 'name' placeholder = 'name'/>
+        <input type = 'number' id = 'price' placeholder = 'price'/>
+        <button onclick = 'postData()'> Add Product</button>
+    </div>
+    
+    <div>
+        <input type = 'number' placeholder = 'id' id= 'del'/>
+        <button onclick = 'deleteData()'>Delete Product</button>
+    </div>
+    
+    <div>
+        <input id = 'newId' type = 'number' placeholder="id"/>
+        <input type = 'text' id = 'newName' placeholder = 'name'/>
+        <input type = 'number' id = 'newPrice' placeholder = 'price'/>
+        <button onclick = 'updateData()'> Update Product</button>
+    </div>
+
+    <div id = 'container'></div>
+
+</body>
+</html>
+
+<script>
+
+    // getting the data from server --done
+    async function getData() {
+
+        let container = document.getElementById('container');
+        container.innerHTML = "";
+
+        let id = document.getElementById('searchId').value;
+
+        let res = await fetch(`http://localhost:2000/api/products/${id}`);
+        let data = await res.json();
+
+        let div = document.createElement('div');
+    
+        let ID = document.createElement('p');
+        ID.innerText = `ID: ${data.id}`;
+    
+        let name = document.createElement('p');
+        name.innerText = `Name: ${data.name}`;
+    
+        let price = document.createElement('p');
+        price.innerText = `Price: ${data.price}`;
+
+        div.append(ID, name, price );
+        container.append(div);
+    }
+
+    // creating a new data obj in the server --done
+    async function postData() {
+
+        let data = {
+            id: document.getElementById("id").value,
+            name: document.getElementById("name").value,
+            price: document.getElementById("price").value,
+        }
+  
+        let res = await fetch(`http://localhost:2000/api/products`, {
+            method:"POST",
+            body: JSON.stringify(data),
+            headers
+             : {
+                "Content-Type":"application/json",
+            }
+        })
+    }
+
+    // deleting existing data from the server --done
+    async function deleteData() {
+
+        let id = document.getElementById('del').value;
+
+        let res = await fetch(`http://localhost:2000/api/products/${id}`, {
+            method:'DELETE',
+            headers: {
+                'Content-Type':'application/json'
+            }
+        })
+    }
+
+    // updating existing data in the server --
+    async function updateData() {
+
+        let id = document.getElementById('newId').value;
+        let name = document.getElementById('newName').value;
+        let price = document.getElementById('newPrice').value;
+
+        console.log( id, name, price );
+
+        try  {
+            let res = await fetch(`http://localhost:2000/api/products/${id}`, {
+                method:'PUT',
+                body: JSON.stringify ({
+                    id: `${id}`,
+                    name: `${name}`,
+                    price: `${price}`
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+        }
+        catch(e) { console.log( e )}
+
+        
+    }
+</script>
